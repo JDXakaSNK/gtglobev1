@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071b21">
+  <meta name="description" content="Globetrotta — un atlante interattivo di idee per un futuro sostenibile, da esplorare un luogo alla volta.">
+  <title>Globetrotta — Un mondo, tante possibilità</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #071b21;
+      --night-soft: #0c282d;
+      --ink: #eff4df;
+      --muted: #9eb5aa;
+      --lime: #d9f56b;
+      --mint: #88d6a8;
+      --coral: #ff9d7a;
+      --line: rgba(228, 244, 213, .17);
+      --serif: Georgia, "Times New Roman", serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--night); }
+    body { margin: 0; color: var(--ink); background: var(--night); }
+    button, a { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; }
+    .site-shell { overflow: hidden; }
+    .topbar {
+      position: absolute; z-index: 10; inset: 0 0 auto; display: flex; align-items: center;
+      justify-content: space-between; padding: 27px clamp(22px, 5.2vw, 82px); border-bottom: 1px solid rgba(255,255,255,.09);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 750; letter-spacing: -.04em; font-size: 1.14rem; }
+    .brand-mark { position: relative; width: 26px; height: 26px; border: 1.5px solid var(--lime); border-radius: 50%; }
+    .brand-mark::before { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); top: 3px; right: 1px; box-shadow: -12px 14px 0 -1px var(--coral); }
+    .brand-mark::after { content: ""; position: absolute; inset: 5px 1px; border: 1px solid rgba(217,245,107,.55); border-radius: 50%; transform: rotate(-33deg); }
+    .nav-links { display: flex; align-items: center; gap: clamp(20px, 3.4vw, 52px); color: #d6e0ce; font-size: .79rem; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--lime); }
+    .sound-toggle { border: 1px solid rgba(217,245,107,.45); border-radius: 99px; background: transparent; padding: 10px 15px; display: inline-flex; align-items: center; gap: 9px; font-size: .72rem; cursor: pointer; }
+    .sound-toggle:hover, .sound-toggle[aria-pressed="true"] { background: rgba(217,245,107,.1); border-color: var(--lime); }
+    .sound-icon { display: inline-flex; align-items: center; gap: 2px; height: 12px; }
+    .sound-icon i { display: block; width: 2px; height: 5px; background: var(--lime); border-radius: 3px; }
+    .sound-toggle[aria-pressed="true"] .sound-icon i:nth-child(2) { height: 10px; }
+    .sound-toggle[aria-pressed="true"] .sound-icon i:nth-child(3) { height: 7px; }
+    .hero { position: relative; min-height: 760px; height: min(100svh, 980px); display: grid; grid-template-columns: 44% 56%; align-items: center; padding: 110px clamp(22px, 5.2vw, 82px) 65px; isolation: isolate; background: radial-gradient(ellipse at 77% 51%, #123a3a 0%, #0b292e 27%, transparent 59%), linear-gradient(120deg, #071b21 0%, #092127 52%, #0b282b 100%); }
+    .hero::before { content: ""; position: absolute; inset: 0; z-index: -2; opacity: .22; background-image: radial-gradient(1px 1px at 13% 31%, #f2f4db 50%, transparent 100%), radial-gradient(1px 1px at 24% 71%, #f2f4db 50%, transparent 100%), radial-gradient(1.4px 1.4px at 39% 20%, #f2f4db 50%, transparent 100%), radial-gradient(1px 1px at 58% 17%, #f2f4db 50%, transparent 100%), radial-gradient(1px 1px at 87% 26%, #f2f4db 50%, transparent 100%), radial-gradient(1.2px 1.2px at 94% 62%, #f2f4db 50%, transparent 100%), radial-gradient(1px 1px at 68% 78%, #f2f4db 50%, transparent 100%); }
+    .hero::after { content: ""; position: absolute; z-index: -1; inset: auto 0 0; height: 26%; background: linear-gradient(0deg, rgba(3,17,20,.72), transparent); pointer-events: none; }
+    .hero-copy { z-index: 2; max-width: 590px; padding-bottom: 17px; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 25px; color: var(--lime); text-transform: uppercase; letter-spacing: .19em; font-size: .66rem; font-weight: 700; }
+    .eyebrow::before { content: ""; display: block; width: 30px; height: 1px; background: var(--lime); }
+    h1 { margin: 0; max-width: 650px; font-family: var(--serif); font-weight: 400; font-size: clamp(3.9rem, 7.2vw, 7.65rem); line-height: .91; letter-spacing: -.065em; }
+    h1 em { display: block; color: var(--lime); font-weight: 400; }
+    .hero-intro { max-width: 370px; margin: 28px 0 28px; color: #b9c9bb; font-size: .94rem; line-height: 1.75; }
+    .cta-row { display: flex; align-items: center; gap: 20px; }
+    .primary-cta { display: inline-flex; align-items: center; gap: 21px; padding: 15px 19px 15px 22px; color: #0c211c; background: var(--lime); border-radius: 2px; font-size: .78rem; font-weight: 750; transition: transform .2s, background .2s; }
+    .primary-cta:hover { transform: translateY(-2px); background: #e7ff8b; }
+    .primary-cta span { font-size: 1.13rem; line-height: .8; }
+    .micro-copy { color: #91a99f; font-size: .66rem; letter-spacing: .04em; }
+    .hero-art { position: absolute; inset: 0 0 0 38%; display: grid; place-items: center; pointer-events: none; }
+    .planet-scene { width: min(72vw, 990px); height: min(83vh, 820px); min-height: 570px; position: relative; pointer-events: auto; }
+    .halo { position: absolute; border: 1px solid rgba(196,241,188,.18); border-radius: 50%; transform: rotate(-24deg); }
+    .halo-one { width: 87%; height: 47%; top: 32%; left: 7%; }
+    .halo-two { width: 78%; height: 39%; top: 36%; left: 11.5%; transform: rotate(28deg); border-color: rgba(196,241,188,.1); }
+    .sun { position: absolute; z-index: 0; width: 90px; height: 90px; top: 12%; right: 17%; border-radius: 50%; background: #f3bc73; box-shadow: 0 0 80px 13px rgba(243,188,115,.13); }
+    .planet { position: absolute; z-index: 1; width: 56%; aspect-ratio: 1; border-radius: 50%; top: 17%; left: 22%; overflow: hidden; background: radial-gradient(circle at 32% 29%, #2eb9a7, #117f7d 45%, #09616b 80%); box-shadow: inset -35px -21px 60px rgba(4,28,42,.45), inset 14px 9px 28px rgba(150,255,207,.18), 0 0 90px rgba(55,201,160,.14); }
+    .planet::before { content: ""; position: absolute; z-index: 2; inset: 0; background: linear-gradient(110deg, transparent 48%, rgba(3,23,36,.42) 95%), radial-gradient(ellipse at 30% 20%, transparent 52%, rgba(0,24,33,.18) 100%); pointer-events: none; }
+    .planet::after { content: ""; position: absolute; z-index: 3; inset: 0; border: 1px solid rgba(197,255,216,.22); border-radius: 50%; }
+    .continents { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .continent { fill: #a0c967; stroke: rgba(35,104,71,.6); stroke-width: 1.3; }
+    .facet { fill: #71b878; opacity: .74; }
+    .facet-light { fill: #c4d77b; opacity: .72; }
+    .facet-dark { fill: #438f74; opacity: .85; }
+    .planet-grid { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .25; }
+    .planet-grid path { fill: none; stroke: #c6f2c5; stroke-width: .75; }
+    .orbit { position: absolute; z-index: 4; width: 77%; height: 33%; top: 41%; left: 11.5%; border: 2px solid rgba(231,241,182,.7); border-radius: 50%; transform: rotate(-29deg); box-shadow: 0 0 13px rgba(219,245,145,.19); }
+    .orbit::before { content: ""; position: absolute; width: 8px; height: 8px; top: 12%; left: 15%; border-radius: 50%; background: var(--coral); box-shadow: 0 0 15px rgba(255,157,122,.9); }
+    .orbit-dash { position: absolute; z-index: 0; width: 88%; height: 48%; top: 31%; left: 5.5%; border: 1px dashed rgba(223,242,184,.34); border-radius: 50%; transform: rotate(12deg); }
+    .land { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; height: 37%; }
+    .land svg { width: 100%; height: 100%; overflow: visible; }
+    .mount-back { fill: #174b47; }
+    .mount-mid { fill: #1d6250; }
+    .mount-front { fill: #367c57; }
+    .mount-light { fill: #77ac65; }
+    .river { fill: none; stroke: #92d5bb; stroke-width: 2.2; opacity: .8; }
+    .ridge-line { fill: none; stroke: rgba(209,244,163,.45); stroke-width: 1.1; }
+    .pin { position: absolute; z-index: 7; width: 37px; height: 37px; border: 1px solid rgba(233,255,181,.85); border-radius: 50%; background: rgba(6,28,29,.68); color: var(--lime); display: grid; place-items: center; cursor: pointer; pointer-events: auto; transition: transform .2s, background .2s; box-shadow: 0 0 0 5px rgba(208,243,131,.08); }
+    .pin::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: currentColor; opacity: .8; }
+    .pin::after { content: ""; position: absolute; inset: -6px; border: 1px solid currentColor; border-radius: 50%; opacity: .35; animation: ping 2.5s ease-out infinite; }
+    .pin:hover, .pin[aria-pressed="true"] { transform: scale(1.12); background: var(--lime); color: var(--night); }
+    .pin-a { top: 38%; left: 37%; }
+    .pin-b { top: 48%; left: 59%; color: var(--coral); border-color: var(--coral); }
+    .pin-c { top: 29%; left: 53%; color: #b5e9c5; border-color: #b5e9c5; }
+    .pin-label { position: absolute; top: 49px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .57rem; letter-spacing: .09em; text-transform: uppercase; color: #deedcf; }
+    .scene-note { position: absolute; z-index: 6; bottom: 19%; right: 6%; width: 205px; padding: 16px 18px; border-left: 1px solid var(--lime); color: #e8efdc; background: rgba(6,26,29,.78); backdrop-filter: blur(8px); pointer-events: none; }
+    .scene-note small { display: block; margin-bottom: 8px; color: var(--lime); font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; }
+    .scene-note strong { display: block; font-family: var(--serif); font-size: 1.25rem; font-weight: 400; }
+    .scene-note p { margin: 7px 0 0; color: #a9c0b1; font-size: .64rem; line-height: 1.5; }
+    .scene-caption { position: absolute; z-index: 5; right: 5%; bottom: 9%; color: #a2b9a9; display: flex; align-items: center; gap: 10px; font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
+    .scene-caption::before { content: ""; width: 34px; height: 1px; background: rgba(217,245,107,.55); }
+    .scroll-cue { position: absolute; z-index: 4; left: clamp(22px, 5.2vw, 82px); bottom: 34px; color: #98ada2; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+    .scroll-cue span { display: block; height: 30px; width: 1px; background: linear-gradient(var(--lime), transparent); }
+    .intro-strip { position: relative; z-index: 3; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 0; padding: 25px clamp(22px, 5.2vw, 82px); background: #d9f56b; color: #122921; align-items: center; }
+    .intro-strip > * { padding: 0 27px; border-left: 1px solid rgba(17,48,31,.22); }
+    .intro-strip > *:first-child { padding-left: 0; border-left: 0; }
+    .strip-lead { max-width: 310px; font-family: var(--serif); font-size: 1.14rem; line-height: 1.2; }
+    .strip-stat { display: flex; flex-direction: column; gap: 3px; }
+    .strip-stat strong { font-family: var(--serif); font-size: 1.65rem; font-weight: 400; }
+    .strip-stat span { font-size: .59rem; letter-spacing: .09em; text-transform: uppercase; opacity: .75; }
+    .section { padding: 128px clamp(22px, 9vw, 140px); }
+    .stories { background: #f1f0df; color: #102821; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 35px; margin-bottom: 54px; }
+    .section .eyebrow { color: #577a56; margin-bottom: 18px; }
+    .section .eyebrow::before { background: currentColor; }
+    h2 { margin: 0; max-width: 700px; font-family: var(--serif); font-size: clamp(2.7rem, 5vw, 5.1rem); line-height: .98; font-weight: 400; letter-spacing: -.055em; }
+    .section-head > p { max-width: 265px; margin: 0 0 6px; color: #587065; font-size: .85rem; line-height: 1.7; }
+    .story-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .story-card { position: relative; min-height: 390px; padding: 23px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; color: #f0f3dc; background: #153c3b; isolation: isolate; }
+    .story-card:nth-child(2) { background: #bd7651; }
+    .story-card:nth-child(3) { background: #334e57; }
+    .story-card::before { content: ""; position: absolute; z-index: -1; width: 260px; height: 260px; border: 1px solid rgba(239,255,207,.28); border-radius: 50%; top: 25px; right: -28px; box-shadow: 0 0 0 24px rgba(238,251,210,.04), 0 0 0 55px rgba(238,251,210,.03); }
+    .story-card::after { content: ""; position: absolute; z-index: -1; inset: 45% -10% -15%; background: linear-gradient(150deg, transparent 20%, rgba(16,49,45,.35)); clip-path: polygon(0 52%, 28% 22%, 50% 48%, 75% 4%, 100% 43%, 100% 100%, 0 100%); }
+    .story-art { position: absolute; z-index: -1; width: 78%; height: 54%; right: -1%; top: 22%; opacity: .72; }
+    .story-art svg { width: 100%; height: 100%; }
+    .story-top { display: flex; justify-content: space-between; align-items: center; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
+    .story-top span:last-child { color: var(--lime); }
+    .story-content { max-width: 280px; }
+    .story-content h3 { margin: 0 0 11px; font-family: var(--serif); font-size: 2.05rem; font-weight: 400; letter-spacing: -.04em; }
+    .story-content p { margin: 0; color: rgba(242,245,222,.78); font-size: .75rem; line-height: 1.6; }
+    .story-link { display: inline-flex; gap: 14px; align-items: center; margin-top: 20px; color: var(--lime); font-size: .65rem; text-transform: uppercase; letter-spacing: .09em; }
+    .story-link span { font-size: 1rem; transition: transform .2s; }
+    .story-link:hover span { transform: translateX(4px); }
+    .manifesto { position: relative; padding: 130px clamp(22px, 10vw, 155px) 140px; background: radial-gradient(ellipse at 70% 75%, #143b39, transparent 48%), #081c21; text-align: center; overflow: hidden; }
+    .manifesto::before, .manifesto::after { content: ""; position: absolute; width: 540px; height: 260px; border: 1px solid rgba(209,240,157,.12); border-radius: 50%; left: 50%; top: 54%; transform: translate(-50%,-50%) rotate(18deg); }
+    .manifesto::after { width: 760px; height: 370px; transform: translate(-50%,-50%) rotate(-22deg); }
+    .manifesto .eyebrow { justify-content: center; }
+    .manifesto .eyebrow::after { content: ""; display: block; width: 30px; height: 1px; background: currentColor; }
+    .manifesto h2 { position: relative; max-width: 850px; margin: 0 auto; font-size: clamp(3.5rem, 7vw, 7rem); }
+    .manifesto h2 em { color: var(--lime); font-weight: 400; }
+    .manifesto p { position: relative; max-width: 440px; margin: 23px auto 28px; color: #afc3b7; font-size: .87rem; line-height: 1.7; }
+    .footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px clamp(22px, 5.2vw, 82px); border-top: 1px solid var(--line); color: #9db1a4; font-size: .63rem; }
+    .footer .brand { color: var(--ink); font-size: .93rem; }
+    .footer-note { letter-spacing: .06em; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @keyframes ping { 0% { transform: scale(.7); opacity: .55; } 100% { transform: scale(1.6); opacity: 0; } }
+    @keyframes slow-orbit { from { transform: rotate(-29deg); } to { transform: rotate(331deg); } }
+    @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+    .planet { animation: float 7s ease-in-out infinite; }
+    .orbit { animation: slow-orbit 70s linear infinite; }
+    .sun { animation: float 8s ease-in-out infinite reverse; }
+    @media (min-width: 1500px) { .hero { min-height: 900px; } }
+    @media (max-width: 1000px) {
+      .hero { min-height: 740px; height: 92svh; grid-template-columns: 50% 50%; }
+      .hero-art { left: 32%; opacity: .88; }
+      .planet-scene { width: 82vw; }
+      .scene-note { right: 0; bottom: 15%; }
+      .story-card { min-height: 350px; }
+      .section { padding: 100px 6vw; }
+    }
+    @media (max-width: 720px) {
+      .topbar { padding: 20px 20px; }
+      .nav-links { display: none; }
+      .hero { display: block; min-height: 820px; height: auto; padding: 126px 22px 40px; }
+      .hero-copy { position: relative; max-width: 520px; }
+      h1 { max-width: 500px; font-size: clamp(3.65rem, 16vw, 6.5rem); }
+      .hero-intro { max-width: 320px; font-size: .84rem; margin: 22px 0; }
+      .hero-art { inset: 310px -23% 0 8%; place-items: center; opacity: .94; }
+      .planet-scene { width: 115vw; height: 510px; min-height: 0; }
+      .planet { width: 56%; top: 15%; left: 22%; }
+      .sun { width: 58px; height: 58px; top: 12%; right: 17%; }
+      .scene-note { right: 5%; bottom: 7%; width: 173px; padding: 12px 13px; }
+      .scene-note strong { font-size: 1rem; }
+      .scene-note p { font-size: .59rem; }
+      .scene-caption { right: 7%; bottom: 0; font-size: .52rem; }
+      .scroll-cue { bottom: 17px; font-size: .53rem; }
+      .intro-strip { grid-template-columns: 1fr 1fr; row-gap: 22px; padding: 24px 22px; }
+      .intro-strip > * { padding: 0 12px; }
+      .intro-strip > *:first-child { grid-column: 1 / -1; padding: 0; }
+      .intro-strip > *:nth-child(2) { border-left: 0; padding-left: 0; }
+      .strip-lead { max-width: 340px; }
+      .strip-stat strong { font-size: 1.4rem; }
+      .section { padding: 83px 22px; }
+      .section-head { display: block; margin-bottom: 34px; }
+      .section-head > p { margin-top: 19px; }
+      .story-grid { grid-template-columns: 1fr; gap: 13px; }
+      .story-card { min-height: 340px; }
+      .manifesto { padding: 100px 22px; }
+      .manifesto::before { width: 380px; height: 190px; }
+      .manifesto::after { width: 520px; height: 260px; }
+      .manifesto h2 { font-size: clamp(3.4rem, 15vw, 5.5rem); }
+      .footer { align-items: flex-start; flex-wrap: wrap; padding: 20px 22px; }
+      .footer-note { width: 100%; order: 3; }
+    }
+    @media (max-width: 390px) {
+      .sound-toggle { padding: 9px 11px; }
+      .hero { min-height: 780px; }
+      .hero-art { inset-top: 340px; }
+      .cta-row { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .scene-note { bottom: 9%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="#inizio" aria-label="Globetrotta, inizio pagina"><span class="brand-mark" aria-hidden="true"></span>globetrotta</a>
+      <nav class="nav-links" aria-label="Navigazione principale">
+        <a href="#mondo">Il mondo</a><a href="#storie">Storie</a><a href="#impatto">Il nostro sguardo</a>
+      </nav>
+      <button class="sound-toggle" type="button" aria-pressed="false" aria-label="Attiva musica ambientale">
+        <span class="sound-icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="sound-label">Suono off</span>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" id="inizio" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Un atlante per ciò che verrà</p>
+          <h1 id="hero-title">Il futuro fa il giro <em>del mondo.</em></h1>
+          <p class="hero-intro">Piccole idee, grandi orizzonti. Un viaggio interattivo tra i luoghi e le persone che stanno immaginando un modo diverso di abitare la Terra.</p>
+          <div class="cta-row">
+            <a class="primary-cta" href="#mondo">Inizia il viaggio <span aria-hidden="true">↗</span></a>
+            <span class="micro-copy">Un mondo condiviso, una storia alla volta.</span>
+          </div>
+        </div>
+
+        <div class="hero-art" id="mondo" aria-label="Globo illustrato con tre storie da esplorare">
+          <div class="planet-scene">
+            <div class="halo halo-one" aria-hidden="true"></div><div class="halo halo-two" aria-hidden="true"></div><div class="orbit-dash" aria-hidden="true"></div><div class="sun" aria-hidden="true"></div>
+            <div class="planet" aria-hidden="true">
+              <svg class="continents" viewBox="0 0 400 400" role="presentation">
+                <path class="continent" d="M68 97 95 71 128 66 146 80 166 82 182 105 171 124 184 143 170 158 156 160 145 184 126 195 118 220 105 215 99 188 83 173 77 152 59 137 57 116Z"/>
+                <path class="facet-light" d="m68 97 27-26 20 43-31 38-25-15-2-21Z"/><path class="facet-dark" d="m115 114 31-34 20 2 16 23-11 19-28 5-17 31-21-7Z"/>
+                <path class="continent" d="m155 207 18-19 21 7 12 21-7 25-14 14-7 36-18 32-13-10-2-33-13-27 5-25Z"/>
+                <path class="facet-light" d="m155 207 18-19 15 22-13 24-17 12-6 31-12-25 5-25Z"/>
+                <path class="continent" d="m197 95 22-12 23 9 16-13 34 12 18 18-6 22 17 13-12 21-28 5-11 20-25-3-10 20-19-4-16-20-14-5-6-26 12-20-10-18Z"/>
+                <path class="facet-light" d="m197 95 22-12 12 41-22 24-20-17 10-18-10-18Z"/><path class="facet-dark" d="m243 92 15-13 34 12 18 18-29 9-22-12-19 14-17-10Z"/><path class="facet" d="m232 146 25-8 14 20-22 16-23-2-11 27-14-15 8-21Z"/>
+                <path class="continent" d="m275 231 26-11 28 9 20 19-8 22-24 7-17-7-14 19-21-8-9-19 12-15Z"/><path class="facet-light" d="m275 231 26-11 13 23-17 27-16-1-9-19 12-15Z"/>
+                <path class="continent" d="m318 177 12-12 14 8 4 20-14 9-12-8Z"/>
+              </svg>
+              <svg class="planet-grid" viewBox="0 0 400 400" role="presentation"><path d="M8 200h384M22 135h356M22 265h356M63 75h274M63 325h274M200 4c58 45 83 112 83 196s-25 151-83 196M200 4c-58 45-83 112-83 196s25 151 83 196M200 4v392"/></svg>
+            </div>
+            <div class="orbit" aria-hidden="true"></div>
+            <button class="pin pin-a" type="button" data-story="energia" aria-label="Esplora energia condivisa" aria-pressed="true"><span class="pin-label">Energia</span></button>
+            <button class="pin pin-b" type="button" data-story="foreste" aria-label="Esplora foreste in ripresa" aria-pressed="false"><span class="pin-label">Foreste</span></button>
+            <button class="pin pin-c" type="button" data-story="citta" aria-label="Esplora città circolari" aria-pressed="false"><span class="pin-label">Città</span></button>
+            <aside class="scene-note" aria-live="polite"><small id="place-region">Isole del Pacifico</small><strong id="place-title">Energia condivisa</strong><p id="place-copy">Il sole diventa una risorsa per tutta la comunità.</p></aside>
+            <div class="land" aria-hidden="true">
+              <svg viewBox="0 0 1000 300" preserveAspectRatio="none" role="presentation">
+                <path class="mount-back" d="M0 169 105 102l65 45 91-102 77 111 95-67 104 80 90-122 112 105 88-63 173 107v104H0Z"/>
+                <path class="mount-mid" d="m0 218 132-94 97 47 116-62 81 76 81-51 98 62 104-77 87 55 103-45 101 67v104H0Z"/>
+                <path class="mount-light" d="m132 124 31 23 36 48-62-24-61 42Zm216-15 40-20 36 54-53-17-42 25Zm251-10 47-61 44 58-53-21Zm284 57 52-38 49 32-60-12-33 42Z"/>
+                <path class="mount-front" d="M0 240q122-52 238-4t221-5q113-53 234 5t307-5v69H0Z"/>
+                <path class="ridge-line" d="M0 244q122-52 238-4t221-5q113-53 234 5t307-5M68 276q136-38 238 5t233-6q119-43 226-4"/>
+                <path class="river" d="M433 149q-14 35 25 58t-1 41q-30 18-64 47"/>
+                <g transform="translate(742 117)" fill="#d9f56b"><path d="M0 83h3V15H0z"/><path d="m1 16-2-15 3 11L20 5 4 17l12 14L2 19l-9 13 7-15-17-8 18 4Z"/><path d="M-8 84h20v3h-20z" fill="#153b35"/></g>
+                <g transform="translate(800 163)" fill="#f4a780"><path d="M0 44h2V8H0z"/><path d="M1 9-1 0 3 7 14 3 4 10l8 9-10-7-5 10 3-10-12-5Z"/><path d="M-6 44H9v2H-6z" fill="#153b35"/></g>
+              </svg>
+            </div>
+            <div class="scene-caption">La Terra, da un altro punto di vista</div>
+          </div>
+        </div>
+        <div class="scroll-cue"><span aria-hidden="true"></span>Scorri per esplorare</div>
+      </section>
+
+      <section class="intro-strip" aria-label="Globetrotta in numeri">
+        <div class="strip-lead">Ogni luogo custodisce una possibilità. Ogni possibilità può fare strada.</div>
+        <div class="strip-stat"><strong>1</strong><span>casa comune</span></div>
+        <div class="strip-stat"><strong>∞</strong><span>modi di prendersene cura</span></div>
+        <div class="strip-stat"><strong>Adesso</strong><span>è il momento di partire</span></div>
+      </section>
+
+      <section class="section stories" id="storie">
+        <div class="section-head reveal">
+          <div><p class="eyebrow">Tre tappe, una stessa direzione</p><h2>Il cambiamento<br>ha molti paesaggi.</h2></div>
+          <p>Segui le tracce di chi sta già trasformando il proprio angolo di mondo — con cura, immaginazione e un po’ di coraggio.</p>
+        </div>
+        <div class="story-grid">
+          <article class="story-card reveal" data-card="energia">
+            <div class="story-art" aria-hidden="true"><svg viewBox="0 0 320 220"><circle cx="206" cy="93" r="42" fill="#edbd71"/><path d="M0 178 82 88l57 56 48-82 133 129v29H0Z" fill="#346854"/><path d="m82 88 22 21-29-4 18 25-36 14Zm105-26 29 50-29-18-19 20 13-39-28 7Z" fill="#9bc371"/><path d="M33 189q80-34 152 0t110-4" fill="none" stroke="#b7e3a0" stroke-width="2" opacity=".6"/><g fill="#d9f56b"><path d="M246 171h3v-47h-3z"/><path d="m247 125-2-11 3 8 13-5-12 8 9 10-11-8-7 10 5-11-13-6 15 3Z"/></g></svg></div>
+            <div class="story-top"><span>01 / Risorse</span><span>Pacifico</span></div>
+            <div class="story-content"><h3>Energia condivisa</h3><p>Quando la luce del sole diventa un progetto di tutti, la comunità trova nuove strade per crescere.</p><a class="story-link" href="#mondo" data-select="energia">Segui la storia <span>↗</span></a></div>
+          </article>
+          <article class="story-card reveal" data-card="foreste">
+            <div class="story-art" aria-hidden="true"><svg viewBox="0 0 320 220"><circle cx="202" cy="84" r="39" fill="#f5c17e"/><path d="M0 177 69 108l48 32 69-87 40 70 32-37 62 56v78H0Z" fill="#8a5545"/><path d="m184 53 15-23 15 23h-10l19 28h-17l21 29h-57l18-29h-16l20-28Z" fill="#b0c477"/><path d="m68 108 27 18-34-6 16 22-35 8Zm118-55 16-23 6 31-17 9Z" fill="#d9e18b"/><path d="M83 185q62-35 124-3t100-8" fill="none" stroke="#f3c89a" stroke-width="2" opacity=".7"/></svg></div>
+            <div class="story-top"><span>02 / Ecosistemi</span><span>Ande</span></div>
+            <div class="story-content"><h3>Foreste in ripresa</h3><p>Un seme alla volta, le persone si prendono cura dei boschi e delle storie che vi mettono radici.</p><a class="story-link" href="#mondo" data-select="foreste">Segui la storia <span>↗</span></a></div>
+          </article>
+          <article class="story-card reveal" data-card="citta">
+            <div class="story-art" aria-hidden="true"><svg viewBox="0 0 320 220"><circle cx="211" cy="80" r="40" fill="#e8be81"/><path d="M0 185h320v35H0Z" fill="#244e4d"/><path d="M42 185v-67h45v67m16 0V83h51v102m15 0v-82h35v82m14 0V59h57v126m13 0v-48h31v48Z" fill="#6d9d77"/><path d="M111 83h18m-18 16h18m-18 16h18m-18 16h18m111-72h21m-21 17h21m-21 17h21m-21 17h21m-21 17h21" stroke="#d9f56b" stroke-width="3" opacity=".7"/><path d="M0 196q98-21 161 1t159-4" fill="none" stroke="#99cfaa" stroke-width="2"/></svg></div>
+            <div class="story-top"><span>03 / Comunità</span><span>Nord Europa</span></div>
+            <div class="story-content"><h3>Città circolari</h3><p>Quartieri pensati per condividere: energia, spazi e nuove possibilità di muoversi insieme.</p><a class="story-link" href="#mondo" data-select="citta">Segui la storia <span>↗</span></a></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="manifesto" id="impatto">
+        <p class="eyebrow">Il viaggio è appena cominciato</p>
+        <h2>Il mondo cambia<br><em>da vicino.</em></h2>
+        <p>Una Terra più gentile non è un luogo lontano. È una somma di gesti, idee e persone che scelgono di muoversi nella stessa direzione.</p>
+        <a class="primary-cta" href="#mondo">Torna a esplorare <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a class="brand" href="#inizio"><span class="brand-mark" aria-hidden="true"></span>globetrotta</a>
+      <span class="footer-note">Un piccolo atlante per una grande casa comune.</span>
+      <span>© Globetrotta 2026</span>
+    </footer>
+  </div>
+  <script>
+    const stories = {
+      energia: { region: 'Isole del Pacifico', title: 'Energia condivisa', copy: 'Il sole diventa una risorsa per tutta la comunità.' },
+      foreste: { region: 'Versante delle Ande', title: 'Foreste in ripresa', copy: 'Le comunità locali rimettono radici nel futuro.' },
+      citta: { region: 'Città del Nord', title: 'Città circolari', copy: 'Quartieri progettati per vivere bene, insieme.' }
+    };
+    const pins = [...document.querySelectorAll('.pin')];
+    const region = document.querySelector('#place-region');
+    const title = document.querySelector('#place-title');
+    const copy = document.querySelector('#place-copy');
+    function selectStory(key) {
+      const story = stories[key];
+      if (!story) return;
+      region.textContent = story.region;
+      title.textContent = story.title;
+      copy.textContent = story.copy;
+      pins.forEach(pin => pin.setAttribute('aria-pressed', String(pin.dataset.story === key)));
+    }
+    pins.forEach(pin => pin.addEventListener('click', () => selectStory(pin.dataset.story)));
+    document.querySelectorAll('[data-select]').forEach(link => link.addEventListener('click', () => selectStory(link.dataset.select)));
+
+    const soundButton = document.querySelector('.sound-toggle');
+    let audioContext;
+    let masterGain;
+    let soundTimer;
+    let noteIndex = 0;
+    const notes = [220, 261.63, 329.63, 392, 329.63, 261.63];
+    function playNote() {
+      if (!audioContext || audioContext.state !== 'running') return;
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = notes[noteIndex++ % notes.length];
+      gain.gain.setValueAtTime(.0001, now);
+      gain.gain.exponentialRampToValueAtTime(.045, now + .6);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + 4.2);
+      osc.connect(gain).connect(masterGain);
+      osc.start(now);
+      osc.stop(now + 4.3);
+    }
+    soundButton.addEventListener('click', async () => {
+      const enabling = soundButton.getAttribute('aria-pressed') !== 'true';
+      if (enabling) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        audioContext ??= new AudioCtx();
+        masterGain ??= audioContext.createGain();
+        masterGain.gain.value = .65;
+        masterGain.connect(audioContext.destination);
+        await audioContext.resume();
+        playNote();
+        soundTimer = window.setInterval(playNote, 2100);
+      } else {
+        window.clearInterval(soundTimer);
+        if (masterGain) masterGain.gain.setTargetAtTime(.0001, audioContext.currentTime, .15);
+      }
+      soundButton.setAttribute('aria-pressed', String(enabling));
+      soundButton.querySelector('.sound-label').textContent = enabling ? 'Suono on' : 'Suono off';
+      soundButton.setAttribute('aria-label', enabling ? 'Disattiva musica ambientale' : 'Attiva musica ambientale');
+      if (!enabling && audioContext) window.setTimeout(() => { if (soundButton.getAttribute('aria-pressed') === 'false') audioContext.suspend(); }, 500);
+    });
+
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  </script>
+</body>
+</html>
